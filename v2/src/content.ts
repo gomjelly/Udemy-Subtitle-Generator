@@ -6,6 +6,7 @@ let isActive = true;
 let fontSize = 16;
 let subtitleWidth = 80;
 let isDualSubtitle = false; // 영어/한글 동시 표시 여부
+let translationEnabled = true; // 번역 활성/비활성 제어
 
 // State
 let currentSubtitle = '';
@@ -44,14 +45,16 @@ async function loadUserSettings() {
     const settings = await chrome.storage.local.get({
       isActive: true,
       fontSize: 16,
-      subtitleWidth: 80,
-      dualSubtitle: false
+      backgroundWidth: 80,
+      dualSubtitle: false,
+      translationEnabled: true
     });
     
     isActive = settings.isActive;
     fontSize = settings.fontSize;
-    subtitleWidth = settings.subtitleWidth;
+    subtitleWidth = settings.backgroundWidth; // backgroundWidth 키에서 로드
     isDualSubtitle = settings.dualSubtitle;
+    translationEnabled = settings.translationEnabled;
     
     // console.log('⚙️ Settings loaded:', settings);
     // console.log('🌐 Dual subtitle mode:', isDualSubtitle);
@@ -79,7 +82,7 @@ function startSubtitleWatcher() {
 }
 
 function detectAndTranslateSubtitle() {
-  if (!isActive) return;
+  if (!isActive || !translationEnabled) return; // 번역이 비활성화되어 있으면 중단
 
   // Udemy subtitle selectors
   const subtitleSelectors = [
@@ -354,7 +357,7 @@ function setupMessageListener() {
       case 'updateSettings':
         isActive = message.settings.isActive;
         fontSize = message.settings.fontSize;
-        subtitleWidth = message.settings.subtitleWidth;
+        subtitleWidth = message.settings.backgroundWidth; // backgroundWidth 사용
         
         // Update existing subtitle if visible
         if (subtitleElement) {
@@ -392,6 +395,19 @@ function setupMessageListener() {
             displayKoreanSubtitle(cachedTranslation);
           }
         }
+        sendResponse({ success: true });
+        break;
+
+      case 'updateTranslationState':
+        translationEnabled = message.value;
+        console.log('🔄 Translation state updated:', translationEnabled);
+        
+        // 번역이 비활성화되면 현재 자막 제거
+        if (!translationEnabled && subtitleElement) {
+          subtitleElement.remove();
+          subtitleElement = null;
+        }
+        
         sendResponse({ success: true });
         break;
         

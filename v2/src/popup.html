@@ -162,6 +162,12 @@
       border-color: #f5c6cb;
     }
     
+    .message.warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border-color: #ffeaa7;
+    }
+    
     .message.info {
       background-color: #d1ecf1;
       color: #0c5460;
@@ -385,7 +391,19 @@
 
     <!-- Subtitle Controls Section -->
     <div id="subtitle-controls-section" class="section hidden">
-      <div class="section-title">🎨 자막 스타일 설정</div>
+      <div class="section-title">🎨 자막 설정</div>
+      
+      <!-- 번역 활성/비활성 토글 -->
+      <div class="toggle-container">
+        <div>
+          <div class="toggle-label">🔄 자동 번역</div>
+          <div class="toggle-description">자동 번역을 시작하거나 중지합니다</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="translation-toggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
       
       <!-- 영어/한글 동시 표시 토글 -->
       <div class="toggle-container">
